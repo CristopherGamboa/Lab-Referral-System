@@ -32,5 +32,11 @@
 
     <app-submit-button content="Ingresar" [disabled]="!form().valid() || isSubmitting()"
     [loading]="isSubmitting()" />
+
+    <a class="text-sm text-indigo-800" routerLink="/auth/password-recovery">
+        Recuperar contraseña
+    </a>
 </form>
+
+
 
