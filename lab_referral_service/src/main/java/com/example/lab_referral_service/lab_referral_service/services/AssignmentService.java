@@ -38,7 +38,7 @@ public class AssignmentService implements IAssignmentService {
     public AssignmentResponseDTO createAssignment(AssignmentRequestDTO requestDTO) {
 
         // Validación de existencia del Paciente (Comunicación entre servicios)
-        userServiceClient.validatePatientExists(requestDTO.getPatientUserId()); // Lanza excepción si no existe
+        // userServiceClient.validatePatientExists(requestDTO.getPatientUserId()); // Lanza excepción si no existe
 
         // Validación de Laboratorio y Análisis
         Laboratory lab = laboratoryRepository.findById(requestDTO.getLabId())
