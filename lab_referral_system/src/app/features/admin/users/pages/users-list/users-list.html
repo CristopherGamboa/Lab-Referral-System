@@ -1,0 +1,53 @@
+<div class="flex flex-col gap-y-3">
+    <div class="flex w-full justify-end">
+        <a routerLink="/admin/users/new" class="flex bg-white p-1 rounded-full fill-emerald-800 hover:fill-emerald-800/40 cursor-pointer">
+            <svg class="w-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"/>
+            </svg>
+        </a>
+    </div>
+    
+    <div class="grid grid-cols-12 gap-4">
+        @let users = usersService.usersResource.value();
+        @for (user of users; track user.id) {
+            <article class="col-span-12 md:col-span-6 lg:col-span-3 p-2 rounded-lg bg-white shadow-2xl">
+                <header class="flex justify-between items-center">
+                    <h1 class="flex items-center gap-x-1">
+                        <span class="text-indigo-800 text-sm align-middle font-semibold">
+                            {{ user.fullName }}
+                        </span>
+                        <span class="w-3 h-2"
+                        [class.fill-green-800]="user.isActive" 
+                        [class.fill-red-800]="!user.isActive" >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-352a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/>
+                        </svg>
+                    </span>
+                </h1>
+                
+                <span class="bg-indigo-900/60 text-xs text-white px-2 py-1 rounded-lg">
+                    {{ user.roles }}
+                </span>
+            </header>
+            
+            <div class="text-xs text-indigo-800">
+                {{ user.email}}
+            </div>
+            
+            <footer class="mt-4 border-t-2 border-indigo-800 flex gap-x-2 items-center p-2 justify-end">
+                <a [routerLink]="['/admin/users/', user.id]" class="flex fill-indigo-800 
+                hover:fill-indigo-800/40 cursor-pointer">
+                <svg class="w-6 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                    <path d="M128.1 0c-35.3 0-64 28.7-64 64l0 384c0 35.3 28.7 64 64 64l146.2 0 10.9-54.5c4.3-21.7 15-41.6 30.6-57.2l132.2-132.2 0-97.5c0-17-6.7-33.3-18.7-45.3L322.8 18.7C310.8 6.7 294.5 0 277.6 0L128.1 0zM389.6 176l-93.5 0c-13.3 0-24-10.7-24-24l0-93.5 117.5 117.5zM332.3 466.9l-11.9 59.6c-.2 .9-.3 1.9-.3 2.9 0 8 6.5 14.6 14.6 14.6 1 0 1.9-.1 2.9-.3l59.6-11.9c12.4-2.5 23.8-8.6 32.7-17.5l118.9-118.9-80-80-118.9 118.9c-8.9 8.9-15 20.3-17.5 32.7zm267.8-123c22.1-22.1 22.1-57.9 0-80s-57.9-22.1-80 0l-28.8 28.8 80 80 28.8-28.8z"/>
+                </svg>
+            </a>
+            <button class="flex fill-red-700 hover:fill-red-700/40 cursor-pointer" (click)="deleteUser(user.id)">
+                <svg class="w-6 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                    <path d="M136.7 5.9L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-8.7-26.1C306.9-7.2 294.7-16 280.9-16L167.1-16c-13.8 0-26 8.8-30.4 21.9zM416 144L32 144 53.1 467.1C54.7 492.4 75.7 512 101 512L347 512c25.3 0 46.3-19.6 47.9-44.9L416 144z"/>
+                </svg>
+            </button>
+            </footer>
+        </article>
+        }
+    </div>
+</div>

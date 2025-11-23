@@ -1,0 +1,36 @@
+<p class="text-center text-sm text-red-700">
+    {{ errorMessage() }}
+</p>
+<form class="w-full flex flex-col gap-y-2" (submit)="login($event)">
+    <div>
+        <label class="text-sm  text-gray-500" for="email">Correo electrónico</label>
+        <input
+        id="email"
+        [field]="form.email"
+        title="Correo electrónico"
+        placeholder="Ej: john.doe@example.com"
+        class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10"
+        type="email"
+        />
+        <app-field-errors [fieldErrors]="form.email().errors()" 
+            [touched]="form.email().touched()" />
+    </div>
+
+    <div>
+        <label class="text-sm  text-gray-500" for="password">Contraseña</label>
+        <input
+        id="password"
+        [field]="form.password"
+        title="Contraseña"
+        placeholder="•••••••••••••"
+        class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10"
+        type="password"
+        />
+        <app-field-errors [fieldErrors]="form.password().errors()" 
+            [touched]="form.password().touched()" />
+    </div>
+
+    <app-submit-button content="Ingresar" [disabled]="!form().valid() || isSubmitting()"
+    [loading]="isSubmitting()" />
+</form>
+

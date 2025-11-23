@@ -1,0 +1,122 @@
+
+@if (userResource.isLoading())
+{
+
+}
+@else {
+    <form class="justify-self-center flex flex-col gap-y-2 bg-white p-4 w-full rounded md:w-1/3" 
+    (submit)="sendRequest($event)">
+        <div>
+            @let idValue = this.id();
+            @if (idValue) {
+                Modificar usuario
+            } 
+            @else {
+                Crear usuario
+            }
+        </div>
+
+        <div>
+            <label class="text-sm  text-gray-500" for="fullName">Nombre completo</label>
+            <input
+            id="fullName"
+            [field]="form.fullName"
+            title="Nombre completo"
+            placeholder="Ej: John Doe"
+            class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10"
+            type="text"
+            />
+            <app-field-errors [fieldErrors]="form.fullName().errors()" 
+                [touched]="form.fullName().touched()" />
+        </div>
+
+        <div>
+            <label class="text-sm  text-gray-500" for="email">Correo electrónico</label>
+            <input
+            id="email"
+            [field]="form.email"
+            title="Correo electrónico"
+            placeholder="Ej: john.doe@example.com"
+            class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10"
+            type="email"
+            />
+            <app-field-errors [fieldErrors]="form.email().errors()" 
+                [touched]="form.email().touched()" />
+        </div>
+
+        <div>
+            <label class="text-sm  text-gray-500" for="password">Contraseña</label>
+            <input
+            id="password"
+            [field]="form.password"
+            title="Confirmar contraseña"
+            placeholder="•••••••••••••"
+            class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10"
+            type="password"
+            />
+            <app-field-errors [fieldErrors]="form.password().errors()" 
+                [touched]="form.password().touched()" />
+        </div>
+
+        <div>
+            <label class="text-sm  text-gray-500" for="confirmPassword">Confirma tu contraseña</label>
+            <input
+            id="confirmPassword"
+            [field]="form.confirmPassword"
+            title="Contraseña"
+            placeholder="•••••••••••••"
+            class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10"
+            type="password"
+            />
+            <app-field-errors [fieldErrors]="form.confirmPassword().errors()" 
+                [touched]="form.confirmPassword().touched()" />
+        </div>
+
+        <div>
+            <label class="text-sm text-gray-500" for="role">Rol</label>
+            <select
+            id="role"
+            [field]="form.role"
+            title="Rol"
+            class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10 text-sm disabled:bg-indigo-800/60"
+            >
+                <option value="TECHNICIAN">
+                    Técnico
+                </option>
+                <option value="PATIENT">
+                    Paciente
+                </option>
+            </select>
+            <app-field-errors [fieldErrors]="form.role().errors()" 
+                [touched]="form.role().touched()" />
+        </div>
+
+        @let labs = labService.labResource.value();
+        @if (labs && userModel().role === 'TECHNICIAN')
+        {
+            <div>
+                <label class="text-sm text-gray-500" for="labId">Laboratorio</label>
+                <select
+                id="labId"
+                [field]="form.labId"
+                title="Laboratorio"
+                class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10 text-sm disabled:bg-indigo-800/60"
+                >
+                    @for (lab of labs; track lab.id) {
+                        <option [value]="lab.id">
+                            {{ lab.name }}
+                        </option>
+                    }
+                </select>
+                <app-field-errors [fieldErrors]="form.labId().errors()" 
+                    [touched]="form.labId().touched()" />
+            </div>
+        }
+        
+        <div class="text-red-700">
+            {{ errorMessage() }}
+        </div>  
+        <app-submit-button content="Confirmar" [disabled]="!form().valid() || isSubmitting()"
+        [loading]="isSubmitting()" />
+    </form>
+}

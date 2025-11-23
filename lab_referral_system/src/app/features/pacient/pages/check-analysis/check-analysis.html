@@ -1,0 +1,54 @@
+<div class="h-dvh flex justify-center items-center bg-indigo-800">
+    <main class="bg-indigo-50 p-4 flex flex-col gap-y-4 items-center rounded">
+        <img class="w-32" src="/images/logo.png" />
+
+        <form >
+            <label class="text-sm  text-gray-500" for="s">Introduce el ID de tu asignación</label>
+            <input
+            id="s"
+            [field]="searchForm.s"
+            title="Introduce el ID de tu asignación"
+            placeholder="Ej: 110"
+            class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10"
+            type="text"
+            />
+            <app-field-errors [fieldErrors]="searchForm.s().errors()" 
+                    [touched]="searchForm.s().touched()" />
+        </form>
+
+        @if (analysisResource.hasValue()) {
+            @let analysis = analysisResource.value();
+            <div class="w-full">
+                <h1 class="text-indigo-800 text-sm font-semibold">
+                    {{analysis.analysisType}}
+                </h1>
+                <h2 class="text-green-800 text-xs">
+                    {{analysis.analysisDate}}
+                </h2>
+                <label class="text-indigo-500 text-xs">
+                    Resultado:
+                </label>
+                <p class="text-indigo-50 bg-gray-400 p-4 rounded">
+                    {{analysis.result}}
+                </p>
+
+                <label class="text-indigo-500 text-xs">
+                    Observaciones:
+                </label>
+                <p class="text-indigo-50 bg-gray-400 p-4 rounded">
+                    {{analysis.notes}}
+                </p>
+            </div>
+        }
+        @else if (analysisResource.isLoading()) {
+            <span class="text-indigo-800">
+                Estamos buscando el resultado con el ID ingresado. Por favor, espera.
+            </span>
+        }
+        @else if (analysisResource.error()) {
+            <span class="text-red-800">
+                No se ha encontrado un análisis con ese ID de asignación.
+            </span>
+        }
+    </main>
+</div>

@@ -1,0 +1,8 @@
+@if (hasErrors()){
+    @for (error of fieldErrors(); track $index) 
+    {
+        <div class="text-sm text-red-800">
+            {{ messages[error.kind] }}
+        </div>
+    }
+}

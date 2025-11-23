@@ -1,0 +1,56 @@
+@if (assignmentService.assignmentsResource.isLoading())
+{
+
+}
+@else {
+    <form class="justify-self-center flex flex-col gap-y-2 bg-white p-4 w-full rounded md:w-1/3" 
+    (submit)="sendRequest($event)">
+
+        <div>
+            <label class="text-sm text-gray-500" for="result">Resultado</label>
+            <input
+            id="result"
+            [field]="form.result"
+            title="Resultado"
+            placeholder="Ej: 110mg en sangre"
+            class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10"
+            type="text"
+            />
+            <app-field-errors [fieldErrors]="form.result().errors()" 
+                [touched]="form.result().touched()" />
+        </div>
+
+        <div>
+            <label class="text-sm text-gray-500" for="notes">Observaciones</label>
+            <textarea
+            id="notes"
+            [field]="form.notes"
+            title="Observaciones"
+            placeholder="Ej: Hacer seguimiento constante"
+            class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10"
+            type="text"
+            ></textarea>
+            <app-field-errors [fieldErrors]="form.notes().errors()" 
+                [touched]="form.notes().touched()" />
+        </div>
+
+        <div>
+            <label class="text-sm text-gray-500" for="analysisDate">Fecha</label>
+            <input
+            id="analysisDate"
+            [field]="form.analysisDate"
+            title="Fecha"
+            class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10"
+            type="date"
+            />
+            <app-field-errors [fieldErrors]="form.analysisDate().errors()" 
+                [touched]="form.analysisDate().touched()" />
+        </div>
+        
+        <div class="text-red-700">
+            {{ errorMessage() }}
+        </div>  
+        <app-submit-button content="Confirmar" [disabled]="!form().valid() || isSubmitting()"
+        [loading]="isSubmitting()" />
+    </form>
+}

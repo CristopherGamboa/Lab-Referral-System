@@ -1,0 +1,96 @@
+
+@if (assignmentService.assignmentsResource.isLoading())
+{
+
+}
+@else {
+    <form class="justify-self-center flex flex-col gap-y-2 bg-white p-4 w-full rounded md:w-1/3" 
+    (submit)="sendRequest($event)">
+        <div>
+            @let idValue = this.id();
+            @if (idValue) {
+                Modificar asignación
+            } 
+            @else {
+                Crear asignación
+            }
+        </div>
+
+        @let patients = usersService.patientsResource.value();
+        <div>
+            <label class="text-sm text-gray-500" for="patientUserId">Paciente</label>
+            <select
+            id="patientUserId"
+            [field]="form.patientUserId"
+            title="Paciente"
+            class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10 text-sm disabled:bg-indigo-800/60"
+            >
+                @for (patient of patients; track patient.id) {
+                    <option [value]="patient.id">
+                        {{ patient.fullName }}
+                    </option>
+                }
+            </select>
+            <app-field-errors [fieldErrors]="form.patientUserId().errors()" 
+                [touched]="form.patientUserId().touched()" />
+        </div>
+
+        @let analysisTypes = analysisTypeService.analysisTypeResource.value();
+        <div>
+            <label class="text-sm text-gray-500" for="analysisId">Tipo de análisis</label>
+            <select
+            id="analysisId"
+            [field]="form.analysisId"
+            title="Tipo de análisis"
+            class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10 text-sm disabled:bg-indigo-800/60"
+            >
+                @for (analysisType of analysisTypes; track analysisType.id) {
+                    <option [value]="analysisType.id">
+                        {{ analysisType.name }}
+                    </option>
+                }
+            </select>
+            <app-field-errors [fieldErrors]="form.analysisId().errors()" 
+                [touched]="form.analysisId().touched()" />
+        </div>
+        
+        @let labs = labService.labResource.value();
+        <div>
+            <label class="text-sm text-gray-500" for="labId">Laboratorio</label>
+            <select
+            id="labId"
+            [field]="form.labId"
+            title="Laboratorio"
+            class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10 text-sm disabled:bg-indigo-800/60"
+            >
+                @for (lab of labs; track lab.id) {
+                    <option [value]="lab.id">
+                        {{ lab.name }}
+                    </option>
+                }
+            </select>
+            <app-field-errors [fieldErrors]="form.labId().errors()" 
+                [touched]="form.labId().touched()" />
+        </div>
+
+        <div>
+            <label class="text-sm text-gray-500" for="appointmentDate">Fecha</label>
+            <input
+            id="appointmentDate"
+            [field]="form.appointmentDate"
+            title="Fecha"
+            class="w-full rounded bg-indigo-800 text-gray-50 p-2 shadow-md h-10"
+            type="date"
+            />
+            <app-field-errors [fieldErrors]="form.appointmentDate().errors()" 
+                [touched]="form.appointmentDate().touched()" />
+        </div>
+        
+        <div class="text-red-700">
+            {{ errorMessage() }}
+        </div>    
+
+        <app-submit-button content="Confirmar" [disabled]="!form().valid() || isSubmitting()"
+        [loading]="isSubmitting()" />
+    </form>
+}

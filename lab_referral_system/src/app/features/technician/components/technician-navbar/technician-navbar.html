@@ -1,0 +1,24 @@
+<header class="w-full flex gap-y-3 items-center justify-between 
+bg-indigo-100 px-6 py-3 md:py-0">
+    <img class="w-20" src="/images/logo.png">
+
+    <nav class="flex gap-x-3 text-indigo-800 font-semibold">
+        <a class="flex gap-x-1 items-center" routerLink="/technician/assignments">
+            <span class="fill-indigo-800">
+                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                    <path d="M288 0L128 0C110.3 0 96 14.3 96 32s14.3 32 32 32L128 215.5 7.5 426.3C2.6 435 0 444.7 0 454.7 0 486.4 25.6 512 57.3 512l333.4 0c31.6 0 57.3-25.6 57.3-57.3 0-10-2.6-19.8-7.5-28.4L320 215.5 320 64c17.7 0 32-14.3 32-32S337.7 0 320 0L288 0zM192 215.5l0-151.5 64 0 0 151.5c0 11.1 2.9 22.1 8.4 31.8l41.6 72.7-164 0 41.6-72.7c5.5-9.7 8.4-20.6 8.4-31.8z"/>
+                </svg>
+            </span>
+            <span class="hidden md:flex">
+                Asignaciones
+            </span>
+        </a>
+    </nav>
+
+    <button (click)="logout()" class="p-1 justify-center items-center rounded-lg fill-red-700 
+    hover:fill-red-700/40 hover:cursor-pointer">
+        <svg class="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path d="M505 273c9.4-9.4 9.4-24.6 0-33.9L361 95c-6.9-6.9-17.2-8.9-26.2-5.2S320 102.3 320 112l0 80-112 0c-26.5 0-48 21.5-48 48l0 32c0 26.5 21.5 48 48 48l112 0 0 80c0 9.7 5.8 18.5 14.8 22.2s19.3 1.7 26.2-5.2L505 273zM160 96c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 32C43 32 0 75 0 128L0 384c0 53 43 96 96 96l64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l64 0z"/>
+        </svg>
+    </button>
+</header>
