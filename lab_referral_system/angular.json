@@ -74,7 +74,8 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "coverage": true
+            "coverage": true,
+            "coverageReporters": ["lcov", "html"]
           }
         }
       }
