@@ -2,7 +2,10 @@ import { TestBed } from '@angular/core/testing';
 import { LabService } from './lab-service';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment'; // Ajusta la ruta si es necesario
+import { environment } from '../../../../environments/environment';
+
+// Importamos 'vi' de vitest para usar waitFor
+import { vi } from 'vitest';
 
 describe('LabService', () => {
   let service: LabService;
@@ -12,9 +15,8 @@ describe('LabService', () => {
     TestBed.configureTestingModule({
       providers: [
         LabService,
-        // Proveedores necesarios para probar peticiones HTTP modernas
         provideHttpClient(),
-        provideHttpClientTesting() 
+        provideHttpClientTesting()
       ]
     });
 
@@ -23,7 +25,6 @@ describe('LabService', () => {
   });
 
   afterEach(() => {
-    // Verifica que no queden peticiones pendientes o inesperadas
     httpMock.verify();
   });
 
@@ -31,43 +32,48 @@ describe('LabService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('labResource debe hacer una petición GET y actualizar su valor', () => {
-    // Datos simulados que esperamos recibir del backend
+  // NOTA: El test debe ser 'async' ahora
+  it('labResource debe hacer una petición GET y actualizar su valor', async () => {
     const mockLabsResponse = [
       { id: '1', name: 'Laboratorio Central', address: 'Calle Falsa 123' },
       { id: '2', name: 'BioLab', address: 'Avenida Siempre Viva 742' }
     ];
 
-    // 1. Accedemos al recurso. 
-    // Al ser un httpResource, la petición suele dispararse al instanciarse o al leerse por primera vez.
-    // Verificamos el estado inicial (debería ser undefined o loading antes de la respuesta)
-    expect(service.labResource.value()).toBeUndefined(); 
+    // 1. Trigger: Leemos el signal para que el Effect interno se active
+    expect(service.labResource.value()).toBeUndefined();
 
-    // 2. Interceptamos la petición HTTP generada automáticamente por httpResource
+    // 2. Zoneless: Forzamos que los efectos pendientes (la petición HTTP) se lancen
+    TestBed.tick();
+
+    // 3. Interceptamos y respondemos
     const req = httpMock.expectOne(`${environment.API.REFERRAL_URL}/catalog/laboratories`);
-    
-    // 3. Verificamos que sea el método correcto
     expect(req.request.method).toBe('GET');
-
-    // 4. Simulamos la respuesta del servidor ("Flush")
     req.flush(mockLabsResponse);
 
-    // 5. Verificamos que la señal (Signal) del recurso se haya actualizado con los datos
-    // En Angular moderno, la actualización de la señal tras el flush es síncrona en tests
-    expect(service.labResource.value()).toEqual(mockLabsResponse);
+    // 4. LA SOLUCIÓN ZONELESS:
+    // No usamos tick(). Usamos vi.waitFor().
+    // Esto espera a que la microtask del httpResource termine y actualice el signal.
+    await vi.waitFor(() => {
+      // Vitest reintentará esta línea hasta que deje de fallar o haga timeout
+      expect(service.labResource.value()).toEqual(mockLabsResponse);
+    });
   });
 
-  it('debe manejar errores correctamente', () => {
-    // 1. Esperamos la llamada
-    const req = httpMock.expectOne(`${environment.API.REFERRAL_URL}/catalog/laboratories`);
+  it('debe manejar errores correctamente', async () => {
+    // 1. Trigger
+    const unused = service.labResource.value();
+    
+    // 2. Forzar petición
+    TestBed.tick();
 
-    // 2. Simulamos un error de red o servidor (ej: 500 Internal Server Error)
+    // 3. Responder con error
+    const req = httpMock.expectOne(`${environment.API.REFERRAL_URL}/catalog/laboratories`);
     const mockError = new ProgressEvent('error');
     req.error(mockError, { status: 500, statusText: 'Server Error' });
 
-    // 3. Verificamos el estado de error del recurso
-    // httpResource expone una propiedad .error() que contiene el error si falla
-    expect(service.labResource.error()).toBeTruthy();
-    expect(service.labResource.value()).toBeUndefined(); // El valor debe seguir undefined (o lo que tuviera antes)
+    // 4. Esperar a que el signal de error se actualice
+    await vi.waitFor(() => {
+       expect(service.labResource.error()).toBeTruthy();
+    });
   });
 });

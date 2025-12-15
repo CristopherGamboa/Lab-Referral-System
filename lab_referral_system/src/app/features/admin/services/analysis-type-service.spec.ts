@@ -3,6 +3,7 @@ import { AnalysisTypeService } from './analysis-type-service';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { vi } from 'vitest'; // Importamos vi para usar waitFor
 
 describe('AnalysisTypeService', () => {
   let service: AnalysisTypeService;
@@ -29,33 +30,47 @@ describe('AnalysisTypeService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('analysisTypeResource debe realizar una petición GET y actualizar los datos', () => {
+  // Hacemos el test async para poder esperar (await)
+  it('analysisTypeResource debe realizar una petición GET y actualizar los datos', async () => {
     const mockAnalysisTypes = [
       { id: '1', name: 'Hemograma Completo', description: 'Análisis de sangre' },
       { id: '2', name: 'Perfil Lipídico', description: 'Colesterol y triglicéridos' }
     ];
 
-    // 1. Verificamos estado inicial
+    // 1. Trigger: Leemos el valor para despertar al resource (Lazy signal)
     expect(service.analysisTypeResource.value()).toBeUndefined();
 
-    // 2. Esperamos la petición a la URL correcta
+    // 2. Forzamos la ejecución del efecto pendiente que hace la petición HTTP
+    TestBed.tick();
+
+    // 3. Ahora sí, interceptamos la petición
     const req = httpMock.expectOne(`${environment.API.REFERRAL_URL}/catalog/analysis`);
     expect(req.request.method).toBe('GET');
 
-    // 3. Devolvemos los datos simulados
+    // 4. Respondemos con datos simulados
     req.flush(mockAnalysisTypes);
 
-    // 4. Verificamos que la señal tenga los datos
-    expect(service.analysisTypeResource.value()).toEqual(mockAnalysisTypes);
+    // 5. Usamos waitFor para esperar a que el Signal procese la respuesta de forma asíncrona
+    await vi.waitFor(() => {
+      expect(service.analysisTypeResource.value()).toEqual(mockAnalysisTypes);
+    });
   });
 
-  it('debe manejar errores en la petición', () => {
+  it('debe manejar errores en la petición', async () => {
+    // 1. Trigger de lectura
+    const unused = service.analysisTypeResource.value(); 
+    
+    // 2. Forzamos salida de petición
+    TestBed.tick();
+
     const req = httpMock.expectOne(`${environment.API.REFERRAL_URL}/catalog/analysis`);
 
-    // Simulamos error 404 Not Found
+    // 3. Simulamos error 404
     req.error(new ProgressEvent('error'), { status: 404, statusText: 'Not Found' });
 
-    // Verificamos que la señal de error esté activa
-    expect(service.analysisTypeResource.error()).toBeTruthy();
+    // 4. Esperamos a que el signal de error se active
+    await vi.waitFor(() => {
+      expect(service.analysisTypeResource.error()).toBeTruthy();
+    });
   });
 });
