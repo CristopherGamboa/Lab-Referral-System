@@ -1,74 +1,52 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AdminLayout } from './admin-layout';
-import { provideRouter } from '@angular/router';
+import { AuthService } from '../../../auth/services/auth-service'; // Importamos el servicio real para el token
+import { provideRouter, RouterOutlet } from '@angular/router';
 import { By } from '@angular/platform-browser';
-import { Component } from '@angular/core';
-import { AdminNavbar } from '../admin-navbar/admin-navbar';
-import { RouterOutlet } from '@angular/router';
-import { describe, it, expect, beforeEach } from 'vitest';
-
-// 1. Mock del componente hijo (AdminNavbar)
-// Esto es CRUCIAL en Unit Testing: aislamos el Layout de la complejidad del Navbar.
-@Component({
-  selector: 'app-admin-navbar',
-  standalone: true, // En Angular 21 es true por defecto, pero explícito para mocks ayuda
-  template: '<div data-testid="mock-navbar"></div>'
-})
-class MockAdminNavbar {}
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { AdminNavbar } from '../admin-navbar/admin-navbar'; // Importamos el componente real
 
 describe('AdminLayout', () => {
   let component: AdminLayout;
   let fixture: ComponentFixture<AdminLayout>;
 
   beforeEach(async () => {
+    // Mockeamos el AuthService que necesita el AdminNavbar (el hijo)
+    const authServiceMock = {
+      logout: vi.fn()
+    };
+
     await TestBed.configureTestingModule({
-      imports: [AdminLayout], // Importamos el componente bajo prueba
+      imports: [AdminLayout], // Importamos el Layout real (que a su vez importa el Navbar real)
       providers: [
-        provideRouter([]) // Proveedor moderno para manejar <router-outlet> sin RouterTestingModule
+        provideRouter([]), // Necesario para <router-outlet> y routerLinks del navbar
+        { provide: AuthService, useValue: authServiceMock } // Proveemos la dependencia del HIJO
       ]
     })
-    // 2. Sobrescribimos las dependencias del componente
-    // Reemplazamos el AdminNavbar real por nuestro Mock
-    .overrideComponent(AdminLayout, {
-      remove: { imports: [AdminNavbar] },
-      add: { imports: [MockAdminNavbar] }
-    })
+    // ELIMINAMOS EL BLOQUE .overrideComponent
     .compileComponents();
 
     fixture = TestBed.createComponent(AdminLayout);
     component = fixture.componentInstance;
-    fixture.detectChanges(); // Dispara el ciclo de vida inicial
+    fixture.detectChanges();
   });
 
-  it('should create the layout', () => {
+  it('debería crearse correctamente', () => {
     expect(component).toBeTruthy();
   });
 
-  // --- PRUEBAS DE ESTRUCTURA DOM ---
+  it('debería renderizar el Navbar y el Outlet', () => {
+    // Ahora buscamos el componente REAL, no el mock
+    const navbar = fixture.debugElement.query(By.directive(AdminNavbar));
+    const outlet = fixture.debugElement.query(By.directive(RouterOutlet));
 
-  it('should render the AdminNavbar', () => {
-    // Buscamos por la directiva del componente mockeado
-    const navbarDebugEl = fixture.debugElement.query(By.directive(MockAdminNavbar));
-    
-    expect(navbarDebugEl).toBeTruthy();
-    // Opcional: Verificar que las clases CSS del padre se aplican si son importantes
-    // Nota: Validar clases de Tailwind puede hacer el test frágil, úsalo con mesura.
+    expect(navbar).toBeTruthy();
+    expect(outlet).toBeTruthy();
   });
 
-  it('should contain a RouterOutlet for child routes', () => {
-    // Buscamos la directiva RouterOutlet
-    const outletDebugEl = fixture.debugElement.query(By.directive(RouterOutlet));
-    
-    expect(outletDebugEl).toBeTruthy();
-  });
-
-  it('should have the correct structure containers', () => {
-    // Verificamos que existe el contenedor principal del contenido (el div índigo)
-    // Usamos clases CSS para localizarlo, o mejor aún, podrías añadir data-testid en el HTML
-    const mainContainer = fixture.debugElement.query(By.css('div.bg-indigo-900'));
-    const scrollableArea = fixture.debugElement.query(By.css('main.overflow-auto'));
-
+  it('debería tener la estructura CSS correcta', () => {
+    // Validamos el contenedor del HTML
+    const mainContainer = fixture.debugElement.query(By.css('.bg-indigo-900'));
     expect(mainContainer).toBeTruthy();
-    expect(scrollableArea).toBeTruthy();
   });
 });

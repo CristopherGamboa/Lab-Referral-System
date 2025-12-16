@@ -71,6 +71,12 @@ export class AnalysisResultForm {
     this.errorMessage.set('');
 
     await this.createAnalysisResult(this.form().value());
+
+    if (this.errorMessage()) {
+      this.isSubmitting.set(false);
+      return;
+    }
+
     await this.updateAssignmentStatus(this.assignmentId());
 
     this.isSubmitting.set(true);
