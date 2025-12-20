@@ -17,6 +17,8 @@ RUN mvn dependency:go-offline -B
 # Copia el código fuente del proyecto
 COPY src ./src
 
+COPY Wallet_J5CZ0BX9RIVK63AW ./Wallet_J5CZ0BX9RIVK63AW
+
 # Empaqueta la aplicación Spring Boot en un JAR ejecutable
 RUN mvn package -DskipTests
 
@@ -35,6 +37,8 @@ WORKDIR /opt/app
 
 # Copia el JAR generado desde la fase 'build' al contenedor final
 COPY --from=build /app/${JAR_FILE} app.jar
+
+COPY --from=build /app/Wallet_J5CZ0BX9RIVK63AW ./Wallet_J5CZ0BX9RIVK63AW
 
 # Expone el puerto por defecto de Spring Boot
 EXPOSE 8082
